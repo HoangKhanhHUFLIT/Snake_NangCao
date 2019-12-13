@@ -1,0 +1,267 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+namespace Snake_2
+{
+    class Program
+    {
+        //Em Them Chữ Dừng
+        public enum TrangThai { UP, DOWN, LEFT, RIGHT ,TangToc,Dung};//*
+        struct ToaDo
+        {
+            public int x, y;
+        }
+        struct Snake
+        {
+            public ToaDo[] Dot;
+            public int n;
+            public TrangThai tt;
+            public TrangThai tt_2;
+        }
+        struct HoaQua
+        {
+            public ToaDo td;
+        }
+        struct Chanllenged
+        {
+            public ToaDo[] CDxy;
+        }
+        static void HinhVuong()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("          * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          *                                                   *");
+            Console.WriteLine("          * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        }
+        static void HienThi(Snake snake, HoaQua HQ, Chanllenged CD)
+        {
+            Console.Clear();           
+            HinhVuong();
+            Random N = new Random();
+            Console.SetCursorPosition(CD.CDxy[0].x, CD.CDxy[0].y);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write('↓');
+            if (CD.CDxy[1].y > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.SetCursorPosition(CD.CDxy[1].x, CD.CDxy[1].y);
+                Console.Write('↓');
+            }
+            if (CD.CDxy[2].y > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.SetCursorPosition(CD.CDxy[2].x, CD.CDxy[2].y);
+                Console.Write('↓');
+            }
+            Console.SetCursorPosition(HQ.td.x, HQ.td.y);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write('A');
+            for (int i = 0; i < snake.n; i++)
+            {
+                Console.SetCursorPosition(snake.Dot[i].x, snake.Dot[i].y);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("*");
+            }
+        }
+        static void XuLy(ref Snake snake, ref HoaQua HQ, ref Chanllenged CD,out int A)
+        {
+            Random N = new Random();
+            if (snake.Dot[0].x == HQ.td.x && snake.Dot[0].y == HQ.td.y)
+            {
+                for (int i = snake.n; i > 0; i--)
+                    snake.Dot[i] = snake.Dot[i - 1];
+                snake.n++;
+                if (snake.tt == TrangThai.UP)
+                    snake.Dot[0].y--;
+                else if (snake.tt == TrangThai.DOWN)
+                    snake.Dot[0].y++;
+                else if (snake.tt == TrangThai.LEFT)
+                    snake.Dot[0].x--;
+                else if (snake.tt == TrangThai.RIGHT)
+                    snake.Dot[0].x++;
+                HQ.td.x = N.Next(12, 52);
+                HQ.td.y = N.Next(10, 22);
+            }
+            for (int j = 0; j < 3; j++)
+            {
+                if (CD.CDxy[j].y == 27 )
+                {
+                    CD.CDxy[j].x = N.Next(11, 62);
+                    CD.CDxy[j].y = 3;
+                    for(int i = 1;i<3;i++)
+                    {
+                        if(CD.CDxy[i].x==CD.CDxy[j].x)
+                            CD.CDxy[j].x = N.Next(11, 62);
+                    }
+                }
+            }
+            A = snake.n;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            if (snake.Dot[0].x <= 9 || snake.Dot[0].x >= 63 || snake.Dot[0].y <= 6 || snake.Dot[0].y >= 28)
+            {
+                Console.SetCursorPosition(26, 2);
+                Console.Write("Chet Do dung Tuong");
+                snake.n = -1;
+            }
+            for (int i = 2; i < snake.n; i++)
+            {
+                if (snake.Dot[i].x == snake.Dot[0].x && snake.Dot[i].y == snake.Dot[0].y)
+                {
+                    Console.SetCursorPosition(25, 2);
+                    Console.Write("Chet Do Tu Can Minh");
+                    snake.n = -1;
+                }
+
+            }          
+            for (int i = 0; i < snake.n; i++)
+            {
+                if (CD.CDxy[0].y - 1 == snake.Dot[i].y && CD.CDxy[0].x == snake.Dot[i].x)
+                {
+                    Console.SetCursorPosition(31, 2);
+
+                    Console.Write("Chet do ↓");
+                    snake.n = -1;
+                }
+                else if (CD.CDxy[1].y - 1 == snake.Dot[i].y && CD.CDxy[1].x == snake.Dot[i].x)
+                {
+                    Console.SetCursorPosition(31, 2);
+
+                    Console.Write("Chet do : ↓");
+                    snake.n = -1;
+                }
+                else if (CD.CDxy[2].y - 1 == snake.Dot[i].y && CD.CDxy[2].x == snake.Dot[i].x)
+                {
+                    Console.SetCursorPosition(31, 2);
+
+                    Console.Write("Chet do ↓");
+                    snake.n = -1;
+                }   
+            }
+        }
+        static void DieuKhien(ref Snake snake, ref HoaQua HQ, ref Chanllenged CD)//* Này em thêm cái If Dừng
+        {
+            for (int i = snake.n - 1; i > 0; i--)
+                snake.Dot[i] = snake.Dot[i - 1];
+            snake.tt_2 = snake.tt;
+            if (Console.KeyAvailable)
+            {
+                char NutBam = Console.ReadKey().KeyChar;
+                Console.Clear();
+                HienThi(snake, HQ, CD);
+                if (NutBam == 'A' || NutBam == 'a')
+                    snake.tt = TrangThai.LEFT;
+                else if (NutBam == 'D' || NutBam == 'd')
+                    snake.tt = TrangThai.RIGHT;
+                else if (NutBam == 'W' || NutBam == 'w')
+                    snake.tt = TrangThai.UP;
+                else if (NutBam == 'S' || NutBam == 's')
+                    snake.tt = TrangThai.DOWN;
+                else if (NutBam == 'E' || NutBam == 'e')
+                    snake.tt_2 = TrangThai.TangToc;
+                else if (NutBam == 'K' || NutBam == 'k')//* Em Đặt K là nút dừng
+                    snake.tt_2 = TrangThai.Dung;
+
+            }
+
+            if (snake.tt_2 == TrangThai.TangToc)
+            {
+                  if (snake.tt== TrangThai.UP)
+                    snake.Dot[0].y -= 5;
+                else if (snake.tt == TrangThai.DOWN)
+                    snake.Dot[0].y += 5;
+                else if (snake.tt == TrangThai.LEFT)
+                    snake.Dot[0].x -= 5;
+                else if (snake.tt == TrangThai.RIGHT)
+                    snake.Dot[0].x+=5;
+            }
+           
+             if (snake.tt == TrangThai.UP)
+                snake.Dot[0].y--;
+            else if (snake.tt == TrangThai.DOWN)
+                snake.Dot[0].y++;
+            else if (snake.tt == TrangThai.LEFT)
+                snake.Dot[0].x--;
+            else if (snake.tt == TrangThai.RIGHT)
+                snake.Dot[0].x++;          
+
+            for (int i = 0; i < 3; i++)
+                CD.CDxy[i].y++;          
+        }
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Snake snake = new Snake(); snake.Dot = new ToaDo[150];
+                HoaQua HQ = new HoaQua();
+                Chanllenged CD = new Chanllenged(); CD.CDxy = new ToaDo[3];
+                Random N = new Random();
+                
+                snake.Dot[0].x = 12;
+                snake.Dot[0].y = 11;
+                HQ.td.x = 30;
+                HQ.td.y = 21;
+                snake.n = 1;
+
+                snake.tt = TrangThai.RIGHT;
+                CD.CDxy[0].x = 15;
+                CD.CDxy[1].x = 35;
+                CD.CDxy[2].x = 59;
+                CD.CDxy[0].y = 3;
+                CD.CDxy[1].y = -35;
+                CD.CDxy[2].y = -68;
+                int A;
+                while (true)
+                {
+                    HienThi(snake, HQ, CD);
+                    DieuKhien(ref snake, ref HQ, ref CD);
+                    XuLy(ref snake, ref HQ, ref CD, out A);
+                    if (snake.n == -1)
+                    {
+
+                        Console.SetCursorPosition(26, 1);
+                        Console.Write("Thua  -  Diem : {0}", (A - 1) * 10);
+                        break;
+                    }
+                    
+                    Thread.Sleep(150);
+                    if (snake.tt_2 == TrangThai.Dung)//* . Nó sẽ dừng lại , chị nhấn thêm 1 nút bất kì sẽ chạy tiếp
+                    {
+                        Console.ReadKey();
+                    }
+                }
+                
+                
+                Console.ReadKey();
+
+            }
+        }
+    }
+}
